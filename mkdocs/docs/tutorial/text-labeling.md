@@ -71,6 +71,10 @@ model.save('saved_ner_model')
 # Load saved model
 loaded_model = kashgari.utils.load_model('saved_ner_model')
 loaded_model.predict(test_x[:10])
+
+# To continue training, compile the newly loaded model first
+loaded_model.compile_model()
+model.fit(train_x, train_y, valid_x, valid_y)
 ```
 
 That's all your need to do. Easy right.
@@ -107,6 +111,31 @@ print(hyper)
 hyper['layer_blstm']['units'] = 32
 
 model = BLSTMModel(hyper_parameters=hyper)
+```
+
+## Use custom optimizer
+
+Kashgari already supports using customized optimizer, like RAdam.
+
+```python
+from kashgari.corpus import SMP2018ECDTCorpus
+from kashgari.tasks.classification import BiLSTM_Model
+# Remember to import kashgari before than RAdam
+from keras_radam import RAdam
+
+train_x, train_y = SMP2018ECDTCorpus.load_data('train')
+valid_x, valid_y = SMP2018ECDTCorpus.load_data('valid')
+test_x, test_y = SMP2018ECDTCorpus.load_data('test')
+
+model = BiLSTM_Model()
+# This step will build token dict, label dict and model structure
+model.build_model(train_x, train_y, valid_x, valid_y)
+# Compile model with custom optimizer, you can also customize loss and metrics.
+optimizer = RAdam()
+model.compile_model(optimizer=optimizer)
+
+# Train model 
+model.fit(train_x, train_y, valid_x, valid_y)
 ```
 
 ## Use callbacks
@@ -187,7 +216,7 @@ class DoubleBLSTMModel(BaseLabelingModel):
         """
         build model architectural
         """
-        output_dim = len(self.pre_processor.label2idx)
+        output_dim = len(self.processor.label2idx)
         config = self.hyper_parameters
         embed_model = self.embedding.embed_model
 

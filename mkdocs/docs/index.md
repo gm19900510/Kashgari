@@ -12,11 +12,11 @@
     <a href='https://coveralls.io/github/BrikerMan/Kashgari?branch=master'>
         <img src='https://coveralls.io/repos/github/BrikerMan/Kashgari/badge.svg?branch=master' alt='Coverage Status'/>
     </a>
-     <a href="https://pepy.tech/project/kashgari-tf">
-        <img src="https://pepy.tech/badge/kashgari-tf"/>
+    <a href="https://pepy.tech/project/kashgari">
+        <img src="https://pepy.tech/badge/kashgari"/>
     </a>
-    <a href="https://pypi.org/project/kashgari-tf/">
-        <img alt="PyPI" src="https://img.shields.io/pypi/v/kashgari-tf.svg">
+    <a href="https://pypi.org/project/kashgari/">
+        <img alt="PyPI" src="https://img.shields.io/pypi/v/kashgari.svg">
     </a>
 </p>
 
@@ -64,17 +64,17 @@ There are also articles and posts that illustrate how to use Kashgari:
 
 ### Requirements and Installation
 
-🎉🎉🎉 We renamed the tf.keras version as **kashgari-tf** 🎉🎉🎉
+🎉🎉🎉 We renamed again for consistency and clarity. From now on, it is all `kashgari`. 🎉🎉🎉
 
-The project is based on TenorFlow 1.14.0 and Python 3.6+, because it is 2019 and type hints is cool.
+The project is based on Python 3.6+, because it is 2019 and type hinting is cool.
 
-```bash
-pip install kashgari-tf
-# CPU
-pip install tensorflow==1.14.0
-# GPU
-pip install tensorflow-gpu==1.14.0
-```
+| Backend          | pypi version                           | desc            |
+| ---------------- | -------------------------------------- | --------------- |
+| TensorFlow 2.x   | `pip install 'kashgari>=2.0.0'`        | coming soon     |
+| TensorFlow 1.14+ | `pip install 'kashgari>=1.0.0,<2.0.0'` | current version |
+| Keras            | `pip install 'kashgari<1.0.0'`         | legacy version  |
+
+[Find more info about the name changing.](https://github.com/BrikerMan/Kashgari/releases/tag/v1.0.0)
 
 ### Example Usage
 
@@ -121,6 +121,7 @@ Epoch 1/50
 ### Run with GPT-2 Embedding
 
 ```python
+import kashgari
 from kashgari.embeddings import GPT2Embedding
 from kashgari.corpus import ChineseDailyNerCorpus
 from kashgari.tasks.labeling import BiGRU_Model
@@ -128,7 +129,9 @@ from kashgari.tasks.labeling import BiGRU_Model
 train_x, train_y = ChineseDailyNerCorpus.load_data('train')
 valid_x, valid_y = ChineseDailyNerCorpus.load_data('valid')
 
-gpt2_embedding = GPT2Embedding('<path-to-gpt-model-folder>', sequence_length=30)
+gpt2_embedding = GPT2Embedding('<path-to-gpt-model-folder>',
+                               task=kashgari.LABELING,
+                               sequence_length=30)
 model = BiGRU_Model(gpt2_embedding)
 model.fit(train_x, train_y, valid_x, valid_y, epochs=50)
 ```
@@ -136,11 +139,14 @@ model.fit(train_x, train_y, valid_x, valid_y, epochs=50)
 ### Run with Bert Embedding
 
 ```python
+import kashgari
 from kashgari.embeddings import BERTEmbedding
 from kashgari.tasks.labeling import BiGRU_Model
 from kashgari.corpus import ChineseDailyNerCorpus
 
-bert_embedding = BERTEmbedding('<bert-model-folder>', sequence_length=30)
+bert_embedding = BERTEmbedding('<bert-model-folder>', 
+                               task=kashgari.LABELING,
+                               sequence_length=30)
 model = BiGRU_Model(bert_embedding)
 
 train_x, train_y = ChineseDailyNerCorpus.load_data()
